@@ -12,5 +12,5 @@ ENV TEST_DB_NAME docker_test
 WORKDIR /testproject
 #RUN python manage.py runserver
 
-EXPOSE 50003
-ENTRYPOINT python manage.py runserver 0.0.0.0:50003
+EXPOSE 40050
+ENTRYPOINT python manage.py runserver 0.0.0.0:40050
