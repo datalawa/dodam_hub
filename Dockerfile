@@ -1,6 +1,8 @@
 FROM python:3.9.14
 
+WORKDIR /datalawa
 COPY . .
+
 RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
