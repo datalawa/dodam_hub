@@ -7,4 +7,5 @@ RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 EXPOSE 40050
-ENTRYPOINT gunicorn --bind=0.0.0.0:40050 testproject.config.wsgi:application
+WORKDIR testproject/
+ENTRYPOINT gunicorn --bind=0.0.0.0:40050 config.wsgi:application
