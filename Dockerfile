@@ -13,4 +13,4 @@ WORKDIR /testproject
 #RUN python manage.py runserver
 
 EXPOSE 40050
-ENTRYPOINT python manage.py runserver 0.0.0.0:40050
+ENTRYPOINT gunicorn --bind=0.0.0.0:40050 config.wsgi:application
