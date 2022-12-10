@@ -7,5 +7,4 @@ RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 EXPOSE 40050
-WORKDIR testproject/
-ENTRYPOINT gunicorn --bind=0.0.0.0:40050 config.wsgi:application
+CMD ["python", "./testproject/manage.py", "runserver", "0.0.0.0:40050", "--noreload"]
