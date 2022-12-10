@@ -10,8 +10,7 @@ RUN pip install -r requirements.txt
 
 ENV TEST_DB_NAME docker_test
 WORKDIR /testproject
-RUN python manage.py test
+#RUN python manage.py runserver
 
 EXPOSE 50003
-
-ENTRYPOINT gunicorn --bind=0.0.0.0:50003 JGW_hub.wsgi:application
+ENTRYPOINT python manage.py runserver 0.0.0.0:50003
