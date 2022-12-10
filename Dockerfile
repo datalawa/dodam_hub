@@ -1,5 +1,5 @@
 FROM python:3.9.14
-
+ENV PYTHONUNBUFFERED 1
 COPY . .
 
 RUN python -m pip install --upgrade pip
