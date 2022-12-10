@@ -8,4 +8,4 @@ RUN pip install -r requirements.txt
 ENV TEST_DB_NAME datalawa_test_docker
 
 EXPOSE 40050
-ENTRYPOINT python ./testproject/manage.py runserver 0.0.0.0:40050
+ENTRYPOINT python ./testproject/manage.py runserver 0.0.0.0:40050 --noreload
