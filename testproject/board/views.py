@@ -26,6 +26,7 @@ from .serializers import LikeSerializer
 from .serializers import LayoutSerializer
 from .serializers import UserSerializer
 from .serializers import RoleSerializer
+from .serializers import PostGetSerializer
 
 from rest_framework import viewsets
 from .pagination import PostPagination
@@ -38,21 +39,29 @@ class BoardViewSet(viewsets.ModelViewSet):
 
 class PostViewSet(viewsets.ModelViewSet):
 
-    queryset = PostModel.objects.all()
+    queryset = PostModel.objects.all().order_by('-post_write_time')
     serializer_class = PostSerializer
     pagination_class = PostPagination
 
     def list(self, request, *args, **kwargs):
-        queryset = self.set_filters(self.get_queryset(), request)
+        queryset = self.set_filters(self.get_queryset(), request).order_by('-post_write_time')
+        total_count = queryset.count()
 
-        page = self.paginate_queryset(queryset.order_by('-post_pk'))
+        page = self.paginate_queryset(queryset)
 
         if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            serializer = PostGetSerializer(page, many=True)
+            response = self.get_paginated_response(serializer.data)
+            response_data = response.data.copy()
+            response_data['total_count'] = total_count
+            response_data['count'] = len(response_data['results'])
+            response_data['count'] = len(response_data['results'])
+            # print('queryset', response_data)
+            response.data = response_data
+            return response
 
-        serializer = self.get_serializer(queryset.order_by('-post_pk'), many=True)
-
+        serializer = PostGetSerializer(queryset.order_by('-post_pk'), many=True)
+        print(serializer.data)
         return Response(serializer.data)
 
     def set_filters(self, queryset, request):
@@ -79,6 +88,11 @@ class PostViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = PostGetSerializer(instance)
+        return Response(serializer.data)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
 
@@ -87,7 +101,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     pagination_class = CommentPagination
 
     def list(self, request, *args, **kwargs):
-        queryset = self.set_filters(self.get_queryset(), request).filter(parent=None)
+        queryset = self.set_filters(self.get_queryset(), request).filter(comment_parent_comment_comment_pk=None)
 
         page = self.paginate_queryset(queryset)
 
@@ -100,18 +114,18 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def set_filters(self, queryset, request):
-        post_pk = request.query_params.get('post_pk', None)
+        post_pk = request.query_params.get('post_post_pk', None)
         comment_text = request.query_params.get('comment_text', None)
-        user_pk = request.query_params.get('user_pk', None)
+        user_pk = request.query_params.get('user_user_pk', None)
 
         if post_pk is not None:
-            queryset = queryset.filter(post_pk=post_pk)
+            queryset = queryset.filter(post_post_pk=post_pk)
 
         if comment_text is not None:
             queryset = queryset.filter(comment_text__contains=comment_text)
 
         if user_pk is not None:
-            queryset = queryset.filter(user_pk=user_pk)
+            queryset = queryset.filter(user_user_pk=user_pk)
 
         return queryset
 

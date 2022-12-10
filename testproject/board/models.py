@@ -95,10 +95,13 @@ class Bill(models.Model):
 
 class Comment(models.Model):
     comment_pk = models.PositiveBigIntegerField(db_column='COMMENT_PK', primary_key=True)  # Field name made lowercase.
-    comment_parent_comment_comment_pk = models.ForeignKey('self', models.DO_NOTHING, db_column='COMMENT_PARENT_COMMENT_COMMENT_PK', blank=True, null=True)  # Field name made lowercase.
+    comment_parent_comment_comment_pk = models.ForeignKey('self', models.DO_NOTHING, db_column='COMMENT_PARENT_COMMENT_COMMENT_PK', blank=True, null=True, related_name='reply')  # Field name made lowercase.
     status = models.PositiveIntegerField(db_column='STATUS')  # Field name made lowercase.
     user_user_pk = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_USER_PK')  # Field name made lowercase.
     post_post_pk = models.ForeignKey('Post', models.DO_NOTHING, db_column='POST_POST_PK')  # Field name made lowercase.
+
+    comment_text = models.TextField(db_column='COMMENT_TEXT')
+    comment_write_time = models.DateTimeField(db_column='COMMENT_WRITE_TIME', auto_now_add=True)
 
     class Meta:
         managed = True
@@ -240,10 +243,15 @@ class PerCost(models.Model):
 
 class Post(models.Model):
     post_pk = models.PositiveBigIntegerField(db_column='POST_PK', primary_key=True)  # Field name made lowercase.
-    user_user_pk = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_USER_PK')  # Field name made lowercase.
+    user_user_pk = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_USER_PK', null=True)  # Field name made lowercase.
     post_text = models.TextField(db_column='POST_TEXT')  # Field name made lowercase.
     board_board_pk = models.ForeignKey(Board, models.DO_NOTHING, db_column='BOARD_BOARD_PK')  # Field name made lowercase.
     post_title = models.CharField(db_column='POST_TITLE', max_length=45, blank=True, null=True)  # Field name made lowercase.
+
+    post_tag = models.IntegerField(db_column='POST_TAG', null=True)
+    post_refer = models.ForeignKey('self', on_delete=models.DO_NOTHING, db_column='POST_REFER', null=True)
+    post_write_time = models.DateTimeField(db_column='POST_WRITE_TIME', auto_now_add=True, null=False)
+    post_update_time = models.DateTimeField(db_column='POST_UPDATE_TIME', auto_now=True, null=False)
 
     class Meta:
         managed = True

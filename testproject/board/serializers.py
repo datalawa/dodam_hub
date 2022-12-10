@@ -9,14 +9,21 @@ from .models import Layout as LayoutModel
 from .models import User as UserModel
 from .models import Role as RoleModel
 
+
+
+class UserPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserModel
+        fields = ['user_pk', 'user_email', 'user_nm']
+
+
+
+
+
+
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoardModel
-        fields = "__all__"
-
-class PostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostModel
         fields = "__all__"
 
 class PostUpdateSerializer(serializers.ModelSerializer):
@@ -34,7 +41,8 @@ class RecursiveSerializer(serializers.Serializer):
 class CommentSerializer(serializers.ModelSerializer):
     reply = serializers.SerializerMethodField()
     # reply = RecursiveSerializer(many=True, read_only=True)
-    post_pk = serializers.SlugRelatedField(queryset=PostModel.objects.all(), slug_field='post_pk')
+    post_post_pk = serializers.SlugRelatedField(queryset=PostModel.objects.all(), slug_field='post_pk')
+    user_user_pk = UserPostSerializer(read_only=True)
 
     class Meta:
         model = CommentModel
@@ -70,3 +78,33 @@ class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoleModel
         fields = "__all__"
+
+
+
+
+
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostModel
+        fields = "__all__"
+
+class PostGetSerializer(serializers.ModelSerializer):
+    user_user_pk = UserPostSerializer(read_only=True)
+    like_count = serializers.SerializerMethodField()
+    comment_count = serializers.SerializerMethodField()
+    view_count = serializers.SerializerMethodField()
+
+    def get_like_count(self, obj):
+        return LikeModel.objects.filter(post_post_pk=obj.post_pk).count()
+
+    def get_comment_count(self, obj):
+        return CommentModel.objects.filter(post_post_pk=obj.post_pk).count()
+
+    def get_view_count(self, obj):
+        return ViewModel.objects.filter(post_post_pk=obj.post_pk).count()
+
+    class Meta:
+        model = PostModel
+        fields = ['post_pk', 'user_user_pk', 'post_text', 'board_board_pk',
+                  'post_title', 'post_tag', 'post_refer', 'post_write_time', 'post_update_time', 'like_count', 'comment_count', 'view_count']
