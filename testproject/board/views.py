@@ -3,6 +3,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
+import rest_framework.status as status
 
 from .models import Board as BoardModel
 from .models import Post as PostModel
@@ -42,6 +43,14 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = PostModel.objects.all().order_by('-post_write_time')
     serializer_class = PostSerializer
     pagination_class = PostPagination
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def list(self, request, *args, **kwargs):
         queryset = self.set_filters(self.get_queryset(), request).order_by('-post_write_time')
