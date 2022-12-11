@@ -242,7 +242,7 @@ class PerCost(models.Model):
 
 
 class Post(models.Model):
-    post_pk = models.PositiveBigIntegerField(db_column='POST_PK', primary_key=True)  # Field name made lowercase.
+    post_pk = models.BigAutoField(db_column='POST_PK', primary_key=True)  # Field name made lowercase.
     user_user_pk = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_USER_PK', null=True)  # Field name made lowercase.
     post_text = models.TextField(db_column='POST_TEXT')  # Field name made lowercase.
     board_board_pk = models.ForeignKey(Board, models.DO_NOTHING, db_column='BOARD_BOARD_PK')  # Field name made lowercase.
