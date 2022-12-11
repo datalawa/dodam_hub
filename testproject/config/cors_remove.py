@@ -1,3 +1,6 @@
+import django.http.response
+
+
 class RemoveCORS:
     def __init__(self, get_response):
         self.get_response = get_response
@@ -8,6 +11,11 @@ class RemoveCORS:
             response = self.process_response(request, response)
         return response
 
-    def process_response(self, request, response):
-        response['Access-Control-Allow-Origin'] = ''
+    def process_response(self, request, response: django.http.HttpResponse):
+        print('cors remove')
+        del response.headers['Allow']
+        del response.headers['Cross-Origin-Opener-Policy']
+        del response.headers['Referrer-Policy']
+        del response.headers['Access-Control-Allow-Headers']
+        print(response.headers)
         return response
