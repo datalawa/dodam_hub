@@ -53,7 +53,10 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.set_filters(self.get_queryset().filter(post_tag__lt=3), request).order_by('-post_write_time')
+        if 'board_board_pk' in request.query_params and request.query_params['board_board_pk'] == 3:
+            queryset = self.set_filters(self.get_queryset().filter(post_tag__lt=3), request).order_by('-post_write_time')
+        else:
+            queryset = self.set_filters(self.get_queryset(), request).order_by('-post_write_time')
         total_count = queryset.count()
 
         page = self.paginate_queryset(queryset)
