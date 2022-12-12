@@ -92,6 +92,10 @@ class PostSerializer(serializers.ModelSerializer):
 class PostAnswerSerializer(serializers.ModelSerializer):
     user_user_pk = UserPostSerializer(read_only=True)
     like_count = serializers.SerializerMethodField()
+
+    def get_like_count(self, obj):
+        return LikeModel.objects.filter(post_post_pk=obj.post_pk).count()
+
     class Meta:
         model = PostModel
         fields = ['post_pk', 'user_user_pk', 'post_text',
