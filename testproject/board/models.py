@@ -152,14 +152,14 @@ class Layout(models.Model):
 
 
 class Like(models.Model):
-    post_post_pk = models.OneToOneField('Post', models.DO_NOTHING, db_column='POST_POST_PK', primary_key=True)  # Field name made lowercase.
+    post_post_pk = models.ForeignKey('Post', models.DO_NOTHING, db_column='POST_POST_PK')  # Field name made lowercase.
     user_user_pk = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_USER_PK')  # Field name made lowercase.
-    like_create_dttm = models.DateTimeField(db_column='LIKE_CREATE_DTTM', blank=True, null=True)  # Field name made lowercase.
+    like_create_dttm = models.DateTimeField(db_column='LIKE_CREATE_DTTM', blank=True, null=True, auto_now_add=True)  # Field name made lowercase.
 
     class Meta:
         managed = True
         db_table = 'LIKE'
-        unique_together = (('post_post_pk', 'user_user_pk'),)
+        constraints = [models.UniqueConstraint(fields=('post_post_pk', 'user_user_pk'), name='unique-key-error')]
 
 
 class Method(models.Model):
