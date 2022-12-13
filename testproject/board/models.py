@@ -94,7 +94,7 @@ class Bill(models.Model):
 
 
 class Comment(models.Model):
-    comment_pk = models.PositiveBigIntegerField(db_column='COMMENT_PK', primary_key=True)  # Field name made lowercase.
+    comment_pk = models.AutoField(db_column='COMMENT_PK', primary_key=True)  # Field name made lowercase.
     comment_parent_comment_comment_pk = models.ForeignKey('self', models.DO_NOTHING, db_column='COMMENT_PARENT_COMMENT_COMMENT_PK', blank=True, null=True, related_name='reply')  # Field name made lowercase.
     status = models.PositiveIntegerField(db_column='STATUS')  # Field name made lowercase.
     user_user_pk = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_USER_PK')  # Field name made lowercase.

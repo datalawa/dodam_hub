@@ -114,7 +114,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     pagination_class = CommentPagination
 
     def list(self, request, *args, **kwargs):
-        queryset = self.set_filters(self.get_queryset(), request).filter(comment_parent_comment_comment_pk=None)
+        queryset = self.set_filters(self.get_queryset(), request).filter(comment_parent_comment_comment_pk=None).order_by('comment_write_time')
 
         page = self.paginate_queryset(queryset)
 
