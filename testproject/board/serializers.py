@@ -37,6 +37,10 @@ class RecursiveSerializer(serializers.Serializer):
         serializer = self.parent.parent.__class__(instance, context=self.context)
         return serializer.data
 
+class CommentPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentModel
+        fields = "__all__"
 
 class CommentSerializer(serializers.ModelSerializer):
     reply = serializers.SerializerMethodField()
