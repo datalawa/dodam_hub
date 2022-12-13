@@ -4,6 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 import rest_framework.status as status
+from django.db.utils import IntegrityError
 
 from .models import Board as BoardModel
 from .models import Post as PostModel
@@ -152,6 +153,24 @@ class ViewViewSet(viewsets.ModelViewSet):
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = LikeModel.objects.all()
     serializer_class = LikeSerializer
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+        except IntegrityError as e:
+            if eval(str(e))[0] == 1062:
+                print(request.data['post_post_pk'])
+                instance = self.get_queryset().filter(post_post_pk=int(request.data['post_post_pk']), user_user_pk=request.data['user_user_pk'])
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(e, status=status.HTTP_400_BAD_REQUEST)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class LayoutViewSet(viewsets.ModelViewSet):
     queryset = LayoutModel.objects.all()
