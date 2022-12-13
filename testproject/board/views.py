@@ -18,6 +18,7 @@ from .models import Role as RoleModel
 
 from .serializers import BoardSerializer
 from .serializers import PostSerializer
+from .serializers import CommentPostSerializer
 
 from . serializers import PostUpdateSerializer
 
@@ -113,8 +114,16 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = CommentPagination
 
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = CommentPostSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def list(self, request, *args, **kwargs):
-        queryset = self.set_filters(self.get_queryset(), request).filter(comment_parent_comment_comment_pk=None)
+        queryset = self.set_filters(self.get_queryset(), request).filter(comment_parent_comment_comment_pk=None).order_by('comment_write_time')
 
         page = self.paginate_queryset(queryset)
 
